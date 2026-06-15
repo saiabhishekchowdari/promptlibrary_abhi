@@ -1,0 +1,11 @@
+I want to build prompts for a 3-agent workflow in GitHub Copilot / VS Code.
+
+Use the latest design document as the main source of truth.
+Use the mail thread only for additional business context if required.
+
+Workflow:
+- Agent 1: Data Gathering
+- Agent 2: Validate against 8-point checklist and loop back to Agent 1 if data is incomplete
+- Agent 3: Final validation and output generation
+
+Please create separate system prompts for each agent in markdown code blocks, and also mention the best prompt engineering technique used for each agent.
