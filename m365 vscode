@@ -1,0 +1,68 @@
+# CO-STAR PROMPT — VS Code Extension: "M365 Copilot Bridge"
+
+## Context
+I work in VS Code on [your stack]. My GitHub Copilot seat is capped at
+~9,000 premium requests/month. My org also licenses Microsoft 365
+Copilot (GPT-5.6), which is effectively unmetered for our team, but
+M365 Copilot Chat has no public "send prompt, get completion" API.
+The real API-backed path is a Copilot Studio custom engine agent built
+on GPT-5.6, published with a Direct Line channel and IT-issued
+credentials.
+
+Constraints:
+- No VS Code Marketplace access. Extensions are sideloaded via `.vsix`
+  only (confirmed working with our org's policy).
+- No telemetry, no third-party analytics, no bundled secrets.
+- TypeScript, VS Code Extension API only.
+- Must be useful immediately, even before IT finishes provisioning the
+  Copilot Studio agent (graceful degradation).
+
+## Objective
+Build one VS Code extension, packaged as a sideloadable `.vsix`, that:
+1. Captures the active file / selection / open tabs / git diff / project
+   tree as clean, LLM-ready Markdown — path headers, fenced code blocks,
+   `.gitignore` + custom `.copyignore` respected, live token count via
+   `gpt-tokenizer` — copied to clipboard on command.
+2. Adds a Webview chat panel ("M365 Copilot") that sends that packaged
+   context plus the user's message to a Direct Line REST endpoint
+   (token stored via `vscode.SecretStorage`, never in settings.json),
+   streams the reply back, and lets me insert code blocks from the
+   reply straight into the active editor.
+3. Falls back cleanly to clipboard-only mode with a status-bar notice
+   when no Direct Line secret is configured yet.
+4. Builds locally with `vsce package` into one `.vsix` — no marketplace
+   publish step anywhere in the flow.
+
+## Style
+Idiomatic modern TypeScript. Small, single-responsibility modules:
+contextCapture.ts, directLineClient.ts, chatPanel.ts, extension.ts.
+Reuse VS Code's own APIs (Git extension API for diffs, the language
+definition provider for import resolution) instead of hand-rolled
+parsers. Comment decisions, not obvious code.
+
+## Tone
+Production-grade and pragmatic — the boring, well-documented API beats
+the clever one. Flag assumptions instead of silently guessing.
+
+## Audience
+You're a senior VS Code extension engineer pairing with me. I can run
+commands and make config calls, but want you driving the implementation
+and explaining trade-offs briefly as you go.
+
+## Response format
+1. A short architecture summary first: file tree, what each file owns,
+   and the message-passing contract between the webview and the
+   extension host.
+2. Then implement incrementally, pausing for my go-ahead between steps:
+   (a) context capture + clipboard command
+   (b) package.json contribution points + settings schema
+   (c) SecretStorage-backed Direct Line client, with a mock response
+       mode so it's testable before IT provisions the real agent
+   (d) the Webview chat panel + streaming UI
+   (e) the fallback logic when no secret is configured
+3. For each step: the code, its exact file path, and a one-line "how to
+   verify this works."
+4. End with the exact `vsce package` steps to produce the `.vsix`.
+
+Ask me only if something here is genuinely ambiguous — otherwise make
+the most reasonable engineering call and keep moving.
