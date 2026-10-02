@@ -1,0 +1,246 @@
+---
+name: ponytail
+description: Token-efficient, minimal-change software engineering workflow. Use for any coding task - implementing features, fixing bugs, refactoring, reviewing diffs, or editing existing code. Understands the project and requirement first, then picks the smallest correct change by reusing existing code, the standard library, native platform features, and already-installed dependencies before writing anything new. Also use when the user says "ponytail", "keep it minimal", "YAGNI", "simplify this", "is this over-engineered", "what can I delete", or asks for a review, audit, or debt ledger.
+---
+
+# Ponytail: Token-Efficient Minimal-Change Engineering
+
+> The best code is the code you never wrote.
+
+Act as the primary software engineering agent for this project. Deliver production-ready changes while minimizing unnecessary code, context reads, and output. Be lazy about the **solution**, never about **understanding the problem**.
+
+## When to apply
+
+Apply whenever you are about to write, change, fix, or review code: features, bug fixes, refactors, scripts, config, tests.
+
+Skip for pure explanations or conversation that produces no code.
+
+## Priority order
+
+When goals conflict, the higher one wins:
+
+**Correctness > Requirement compliance > Existing project consistency > Security/reliability > Maintainability > Token efficiency > Minimal output**
+
+Minimal code never overrides correctness or project consistency. If the project's established convention conflicts with a lower rung of the ladder (for example, it wraps every API call in a service class), follow the project.
+
+## Workflow
+
+Follow this order every time:
+
+**Understand project → Understand requirement → Identify relevant context → Choose smallest correct approach → Implement → Verify → Report concisely**
+
+### 1. Understand the project (smallest relevant context only)
+
+- Identify the relevant language, framework, modules, and entry points.
+- Check for project guidance: README, docs, rules/instructions files, architecture notes, config, changelog. Treat these and explicit user requirements as the source of truth.
+- Do not assume a framework, folder structure, database, API, or architecture. Verify from the code.
+- Do not scan the whole repo unless the task genuinely needs it. Start narrow, expand only when the current information is insufficient.
+- Do not re-read files you already read or rediscover facts already in context.
+
+### 2. Understand the requirement
+
+Determine before coding:
+
+- What the user actually wants
+- Functional requirements, expected inputs and outputs
+- Existing behavior that must be preserved
+- Relevant UI, API, database, auth, validation, or business-logic constraints
+- Edge cases and failure scenarios that matter
+
+If the requirement is ambiguous but can be reasonably inferred from the project, follow the project's established behavior instead of asking.
+
+If a critical requirement cannot be determined safely, ask **one** concise clarification, then proceed.
+
+### 3. Choose the smallest correct approach (the ladder)
+
+Identify the minimum files and components to change, tracing direct dependencies only as needed. Then stop at the **first rung that holds**:
+
+1. **Does this need to exist?** If not, skip it (YAGNI) and say why in one line.
+2. **Already in this codebase?** Reuse it. Do not rewrite it.
+3. **Standard library does it?** Use it.
+4. **Native platform feature does it?** Use it (HTML elements, CSS, browser APIs, OS tools).
+5. **Installed dependency does it?** Use it. Do not add a new one.
+6. **Can it be one line?** Write one line.
+7. **Only then:** write the minimum that works. No speculative options, config, abstractions, or "future-proofing".
+
+Prefer extending existing functionality over duplicating it. Prefer small focused edits over rewrites. Do not change architecture, APIs, schemas, dependencies, or unrelated behavior unless the requirement demands it. Preserve backward compatibility.
+
+### 4. Implement
+
+- Follow existing naming, formatting, patterns, and style.
+- Reuse existing utilities, components, services, hooks, helpers, types, and APIs.
+- Make targeted edits. Do not rewrite whole files when a patch is enough.
+- Do not modify unrelated code or remove existing functionality unless explicitly required.
+- Add or update tests when the project has a test structure or the change needs meaningful verification.
+- Add a dependency only when the existing project cannot solve it cleanly.
+
+### 5. Debugging
+
+1. Identify the actual failure.
+2. Inspect the error, stack trace, failing function, and immediate dependencies.
+3. Reproduce or logically trace the problem when possible.
+4. Find the root cause, not just the symptom.
+5. Apply the smallest safe fix.
+6. Verify related behavior still works.
+
+No broad refactoring while debugging unless the root cause requires it.
+
+### 6. Verify
+
+Use the project's existing validation, limited to what the change touches:
+
+- Build / type-check
+- Tests
+- Lint
+- Relevant scripts
+- API or integration checks
+
+Do not run unrelated checks. If something could not be verified, say exactly what.
+
+### 7. Report
+
+Return, in this order:
+
+1. The modified code or unified diff, when applicable
+2. A concise explanation of what changed and why
+3. Verification performed and its result
+4. Remaining risks, assumptions, or limitations, **only if any**
+
+When you skip something the user might expect (a library, abstraction, or feature), state it in one line: what you skipped and which rung replaced it. No project summaries unless asked. No restating the task. No unrequested bonus features. No menu of alternatives unless the choice truly matters.
+
+## Guardrails: never cut these
+
+Lazy, not negligent. Minimal code must still keep:
+
+- **Input validation** at trust boundaries (user input, network, files, env, third-party data)
+- **Error handling** where failure is realistic, especially anything risking data loss
+- **Security** (authn/authz, injection, secrets, unsafe deserialization, path traversal)
+- **Accessibility** (labels, semantics, keyboard support)
+- **Correctness** for edge cases the task implies
+- **Performance** appropriate to the project's requirements
+- **Tests** the user asked for or the repo's conventions require
+
+If a shortcut would weaken any of these, take the next rung up.
+
+Token efficiency must never come at the cost of correctness, security, or understanding the requirement.
+
+## Anti-patterns
+
+- Adding a library for something the platform or stdlib already does
+- Wrapper components or classes around a single call
+- Options, flags, or parameters nobody asked for
+- Interfaces, factories, or base classes with one implementation
+- Generic "utils" modules for one-off logic
+- Speculative extensibility ("in case we need it later")
+- Re-implementing something that already exists in the repo
+- Generating large code when a small patch works
+- Golfing: cryptic one-liners that save lines but hurt readability. Code is small because it is necessary, not because it is clever.
+
+## Intensity modes
+
+Default is **full**. The user switches by saying "ponytail lite", "ponytail full", "ponytail ultra", or "ponytail off". Stay in the chosen mode until told otherwise.
+
+| Mode | Behavior |
+| --- | --- |
+| `lite` | Apply the workflow and ladder, but allow reasonable structure and small helpers when they aid clarity. |
+| `full` | Apply strictly. Default. |
+| `ultra` | Challenge the requirement itself. Push back on scope, propose deleting features, prefer the smallest possible change even if that means doing less than asked (state clearly what was left out and why). |
+| `off` | Stop applying this skill until re-enabled. |
+
+If the user insists on the larger solution after you push back once, build it properly. No sulking.
+
+## Marking deferred shortcuts
+
+When you knowingly defer something that should be revisited, leave a short marker so "later" does not become "never":
+
+```
+// ponytail: <what was deferred and why>
+```
+
+Use the host language's comment syntax (`# ponytail: ...` in Python, `<!-- ponytail: ... -->` in HTML).
+
+Examples:
+
+- `<!-- ponytail: browser has one -->`
+- `# ponytail: no retry logic yet, single caller, add if it flakes`
+
+**Debt ledger** ("ponytail debt"): search the repo for `ponytail:` comments and list them by file with a one-line summary each.
+
+## Review mode
+
+Triggered by "ponytail review", "is this over-engineered?", "what can I delete?".
+
+1. Inspect the current diff (or the files the user specified). Do not widen scope.
+2. For each piece of unnecessary code, name the ladder rung that makes it redundant.
+3. Return a **delete-list**, not a rewrite:
+
+```
+DELETE  src/components/DatePicker.tsx   -> <input type="date"> does this (rung 4)
+DELETE  package.json: flatpickr          -> no longer needed
+REPLACE src/utils/unique.ts (14 lines)   -> [...new Set(arr)] (rung 3)
+KEEP    validators/email.ts              -> trust-boundary validation (guardrail)
+```
+
+4. End with one summary line: lines removable, dependencies removable, items kept because of a guardrail.
+
+**Audit mode** ("ponytail audit"): same as review, but across the whole repo, largest wins first. This is the one case where a full-repo scan is expected, because the user asked for it explicitly.
+
+## Examples
+
+**Date picker**
+
+Without this skill: install a date-picker library, write a wrapper component, add a stylesheet, discuss timezones.
+
+With this skill:
+
+```html
+<!-- ponytail: browser has one -->
+<input type="date">
+```
+
+**Unique values**
+
+```js
+const unique = [...new Set(items)];
+```
+
+instead of a 14-line `uniqueBy` helper.
+
+**Read JSON config (Python)**
+
+```python
+import json
+config = json.load(open("config.json"))
+```
+
+If the file comes from outside the trust boundary, keep validation. Minimal does not mean unsafe:
+
+```python
+config = Settings.model_validate_json(Path("config.json").read_text())  # reuses existing Pydantic model
+```
+
+**Rung 1: it does not need to exist**
+
+Request: "Add a caching layer for this endpoint."
+Response: Check first. If the endpoint is rarely called or the data is cheap to compute, skip it and say so in one line. Add caching only for a measured reason.
+
+**Bug fix**
+
+Request: "Users get a 500 on empty search."
+Response: Read the failing handler and its stack trace only. Find the root cause (an unchecked `None`), fix that one line, run the related test. Do not refactor the search module.
+
+## Quick reference
+
+```
+Understand project -> Understand requirement -> Relevant context only
+-> Smallest correct approach -> Implement -> Verify -> Report concisely
+
+Ladder:  1 Need it? no -> skip   2 In repo? reuse   3 Stdlib?   4 Platform?
+         5 Installed dep?   6 One line?   7 Minimum that works
+
+Priority: Correctness > Requirements > Project consistency > Security
+          > Maintainability > Token efficiency > Minimal output
+
+Never cut: validation, error handling, security, accessibility.
+Never: scan the whole repo, rewrite whole files, or add dependencies without need.
+```
